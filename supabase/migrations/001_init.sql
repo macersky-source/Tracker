@@ -47,3 +47,8 @@ create table if not exists food_cache (
   payload jsonb not null,
   updated_at timestamptz not null default now()
 );
+
+alter table public.users enable row level security;
+alter table public.food_entries enable row level security;
+alter table public.favorites enable row level security;
+alter table public.food_cache enable row level security;
