@@ -1,7 +1,7 @@
 # Telegram Mini App: AI Calorie Tracker — Design Spec
 
 **Date:** 2026-07-27  
-**Status:** Design approved; awaiting user review of this written spec before implementation plan  
+**Status:** Approved — implementation plan in `docs/superpowers/plans/2026-07-27-telegram-calorie-tracker.md`  
 **Audience:** Personal / small circle (~≤50 users)
 
 ## Goal
