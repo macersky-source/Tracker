@@ -12,10 +12,17 @@ Personal AI calorie tracker: FatSecret search + free-text AI parsing, diary in S
 
 ## Setup
 
-1. Copy env file:
+1. Create `.env.local` in the project root with:
 
-```bash
-cp .env.example .env.local
+```
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_WEBAPP_URL=
+TELEGRAM_WEBHOOK_SECRET=
+SUPABASE_URL=
+SUPABASE_SERVICE_KEY=
+FATSECRET_CLIENT_ID=
+FATSECRET_CLIENT_SECRET=
+GEMINI_API_KEY=
 ```
 
 2. Fill variables:
