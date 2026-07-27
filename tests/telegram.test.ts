@@ -40,7 +40,8 @@ describe("verifyInitData", () => {
 
   it("rejects tampered initData", () => {
     const initData = buildInitData({ id: 42, first_name: "Maksim" }, token);
-    expect(verifyInitData(initData + "x", token)).toBe(false);
+    const tampered = initData.replace("first_name%22%3A%22Maksim", "first_name%22%3A%22Hacker");
+    expect(verifyInitData(tampered, token)).toBe(false);
   });
 
   it("rejects wrong bot token", () => {
