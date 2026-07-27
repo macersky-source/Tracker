@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { ParsedFoodItem } from "./types";
 
 export function extractJsonArray(raw: string): unknown {
@@ -36,37 +36,31 @@ export function normalizeParsedItems(data: unknown): ParsedFoodItem[] {
   });
 }
 
-function getClient() {
-  const key = process.env.OPENAI_API_KEY;
-  if (!key) throw new Error("OPENAI_API_KEY is required");
-  return new OpenAI({ apiKey: key });
+function getModel(system: string) {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) throw new Error("GEMINI_API_KEY is required");
+  const genAI = new GoogleGenerativeAI(key);
+  return genAI.getGenerativeModel({
+    model: "gemini-2.0-flash",
+    systemInstruction: system,
+  });
 }
 
-const SYSTEM = `Ты парсер еды. Верни ТОЛЬКО JSON-массив объектов { "name": string, "amount": number, "unit": string }.
+const PARSE_SYSTEM = `Ты парсер еды. Верни ТОЛЬКО JSON-массив объектов { "name": string, "amount": number, "unit": string }.
 Единицы: г, мл, шт, порция. Язык названий — русский. Без комментариев.`;
 
 export async function parseMealText(text: string): Promise<ParsedFoodItem[]> {
-  const client = getClient();
-  async function once(extra?: string) {
-    const completion = await client.chat.completions.create({
-      model: "gpt-4o-mini",
-      temperature: 0,
-      messages: [
-        { role: "system", content: SYSTEM },
-        {
-          role: "user",
-          content: extra ? `${extra}\n\n${text}` : text,
-        },
-      ],
-    });
-    const raw = completion.choices[0]?.message?.content ?? "";
+  const model = getModel(PARSE_SYSTEM);
+  async function once(prompt: string) {
+    const result = await model.generateContent(prompt);
+    const raw = result.response.text();
     return normalizeParsedItems(extractJsonArray(raw));
   }
 
   try {
-    return await once();
+    return await once(text);
   } catch {
-    return await once("Верни только валидный JSON-массив.");
+    return await once(`Верни только валидный JSON-массив.\n\n${text}`);
   }
 }
 
@@ -76,24 +70,13 @@ export async function estimateMacros(item: ParsedFoodItem): Promise<{
   fat: number;
   carbs: number;
 }> {
-  const client = getClient();
-  const completion = await client.chat.completions.create({
-    model: "gpt-4o-mini",
-    temperature: 0,
-    messages: [
-      {
-        role: "system",
-        content:
-          'Оцени КБЖУ. Верни ТОЛЬКО JSON: {"calories":number,"protein":number,"fat":number,"carbs":number}',
-      },
-      {
-        role: "user",
-        content: `${item.amount} ${item.unit} ${item.name}`,
-      },
-    ],
-  });
-  const raw = completion.choices[0]?.message?.content ?? "";
-  const obj = extractJsonObject(raw);
+  const model = getModel(
+    'Оцени КБЖУ. Верни ТОЛЬКО JSON: {"calories":number,"protein":number,"fat":number,"carbs":number}',
+  );
+  const result = await model.generateContent(
+    `${item.amount} ${item.unit} ${item.name}`,
+  );
+  const obj = extractJsonObject(result.response.text());
   return {
     calories: Number(obj.calories) || 0,
     protein: Number(obj.protein) || 0,

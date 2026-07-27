@@ -7,7 +7,7 @@ Personal AI calorie tracker: FatSecret search + free-text AI parsing, diary in S
 - Next.js (App Router) Mini App + API
 - Supabase Postgres
 - FatSecret Platform API
-- OpenAI `gpt-4o-mini`
+- Gemini (`gemini-2.0-flash`) for meal text parsing
 - Telegram Bot webhook
 
 ## Setup
@@ -27,7 +27,7 @@ cp .env.example .env.local
 | `TELEGRAM_WEBHOOK_SECRET` | Random string you choose |
 | `SUPABASE_URL` / `SUPABASE_SERVICE_KEY` | Supabase project settings |
 | `FATSECRET_CLIENT_ID` / `FATSECRET_CLIENT_SECRET` | [platform.fatsecret.com](https://platform.fatsecret.com) |
-| `OPENAI_API_KEY` | OpenAI dashboard |
+| `GEMINI_API_KEY` | Google AI Studio / Gemini API |
 
 3. Run SQL migration in Supabase SQL Editor:
 
