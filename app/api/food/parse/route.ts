@@ -23,9 +23,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: e.message }, { status: 401 });
     }
     console.error(e);
-    return NextResponse.json(
-      { error: "Не удалось разобрать, уточните описание" },
-      { status: 502 },
-    );
+    const message =
+      e instanceof Error && e.message
+        ? e.message
+        : "Не удалось разобрать, уточните описание";
+    return NextResponse.json({ error: message }, { status: 502 });
   }
 }

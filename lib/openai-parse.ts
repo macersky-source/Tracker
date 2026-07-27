@@ -41,7 +41,7 @@ function getModel(system: string) {
   if (!key) throw new Error("GEMINI_API_KEY is required");
   const genAI = new GoogleGenerativeAI(key);
   return genAI.getGenerativeModel({
-    model: "gemini-2.0-flash",
+    model: process.env.GEMINI_MODEL || "gemini-flash-lite-latest",
     systemInstruction: system,
   });
 }

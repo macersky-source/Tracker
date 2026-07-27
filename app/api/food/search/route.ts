@@ -20,9 +20,10 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: e.message }, { status: 401 });
     }
     console.error(e);
-    return NextResponse.json(
-      { error: "База продуктов временно недоступна" },
-      { status: 502 },
-    );
+    const message =
+      e instanceof Error && e.message
+        ? e.message
+        : "База продуктов временно недоступна";
+    return NextResponse.json({ error: message }, { status: 502 });
   }
 }
